@@ -11,7 +11,8 @@ public enum AccountError {
     TOKEN_INVALID(24, "Token Không hợp lệ"),
     TOKEN_EXPIRED(25,"Token đã hết hạn"),
     TOKEN_UNSUPPORTED(26, "Loại token không được hỗ trợ"),
-    TOKEN_CLAIMS_EMPTY(27, "Nội dung token trống")
+    TOKEN_CLAIMS_EMPTY(27, "Nội dung token trống"),
+    UNAUTHORIZED(28, "Không có quyền truy cập tài nguyên này"),
     ;
 
     private final int code;

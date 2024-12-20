@@ -21,6 +21,8 @@ public class SecurityConfig {
     };
 
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomEntryPoint customEntryPoint;
+
     //
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -29,7 +31,10 @@ public class SecurityConfig {
                         .requestMatchers(PUBLIC_ENDPOINT).permitAll()
                         .requestMatchers(HttpMethod.GET, "/user").hasRole("ADMIN")
                         .anyRequest().authenticated())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);  //add custom filter
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)   //add custom filter
+                .exceptionHandling(exHandler -> exHandler
+                        .authenticationEntryPoint(customEntryPoint))
+        ;
         //
         http.csrf().disable();
         return http.build();
