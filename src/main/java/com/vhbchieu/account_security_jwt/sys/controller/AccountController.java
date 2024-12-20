@@ -4,6 +4,10 @@ import com.vhbchieu.account_security_jwt.sys.domain.dto.AccountAuthDto;
 import com.vhbchieu.account_security_jwt.sys.domain.dto.AccountDto;
 import com.vhbchieu.account_security_jwt.sys.domain.request.AccountRequest;
 import com.vhbchieu.account_security_jwt.sys.service.AccountService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +18,10 @@ import java.util.List;
 @RestController
 @RequestMapping("user")
 @RequiredArgsConstructor
+@Tag(name = "API Tài Khoản", description = "Các Api quản lý tài khoản cho ADMIN")
+@SecurityRequirement(name = "bearerAuth")
+//Chú thích auth
+//@SecurityRequirement(name = "bearerAuth")
 public class AccountController {
 
     private final AccountService accountService;
@@ -49,6 +57,7 @@ public class AccountController {
     }
 
     //Get info
+    //@Hidden
     @GetMapping("info")
     AccountDto getAccountInfo() {
         //Lấy người dùng hiện tại

@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,6 +25,19 @@ public class SecurityConfig {
             "/auth/**",
     };
 
+    private final String[] SPRINGDOCS_ENDPOINT = {
+            "/v3/api-docs",
+            "/v3/api-docs/**",
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/webjars/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+    };
+
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
     private final CustomEntryPoint customEntryPoint;
 
@@ -33,6 +47,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authRequest -> authRequest
                         .requestMatchers(PUBLIC_ENDPOINT).permitAll()
+                        .requestMatchers(SPRINGDOCS_ENDPOINT).permitAll()
                         .requestMatchers("/user/info").hasRole("USER")
                         .requestMatchers("/user/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
@@ -40,8 +55,8 @@ public class SecurityConfig {
                 .exceptionHandling(exHandler -> exHandler
                         .authenticationEntryPoint(customEntryPoint))
         ;
-        //
-        http.csrf().disable();
+        //Spring boot (6) csrf disable
+        http.csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
 
@@ -50,7 +65,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    //Hủy tạo 1 người dùng mặc định của Security 6
+    //Hủy tạo 1 người dùng mặc định của Security (6)
     @Bean
     public UserDetailsService userDetailsService() {
         return new InMemoryUserDetailsManager();
