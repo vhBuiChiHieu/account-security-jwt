@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 @Slf4j
@@ -26,10 +27,11 @@ public class JWTTokenProvider {
     public String generateToken(Long accountId, String roles) {
         //
         return Jwts.builder()
+                .setId(UUID.randomUUID().toString())
                 .setSubject(accountId + "")
-                .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .claim("roles", roles)
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -37,6 +39,16 @@ public class JWTTokenProvider {
     //get id (sub)
     public Long getUserId(String token) {
         return Long.parseLong(getClaimValid(token).getSubject());
+    }
+
+    //get JwtId
+    public String getJwtId(String token) {
+        return getClaimValid(token).getId();
+    }
+
+    //get issue
+    public long getIssueAt(String token) {
+        return getClaimValid(token).getIssuedAt().getTime();
     }
 
     //get Key

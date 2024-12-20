@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 
 @Slf4j
@@ -25,6 +26,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new AppErrorResponse(request.getRequestId(),"Lỗi Hệ Thống"));
     }
 
+    @ExceptionHandler(value = NoResourceFoundException.class)
+    ResponseEntity<AppErrorResponse> handleException(NoResourceFoundException e) {
+        log.error("RequestId: {}, Exception: {}", request.getRequestId(), e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new AppErrorResponse(request.getRequestId(), "Không tìm thấy tài nguyên truy vấn"));
+    }
+
     //Account exception
     @ExceptionHandler(value = AccountException.class)
     ResponseEntity<AppErrorResponse> handleAccountException(AccountException e) {
@@ -33,4 +40,5 @@ public class GlobalExceptionHandler {
         AppErrorResponse response = new AppErrorResponse(request.getRequestId(), AccountErrorDto.of(e.getError()));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+
 }

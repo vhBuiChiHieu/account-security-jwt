@@ -4,6 +4,7 @@ import com.vhbchieu.account_security_jwt.sys.domain.dto.AccountAuthDto;
 import com.vhbchieu.account_security_jwt.sys.domain.dto.AccountDto;
 import com.vhbchieu.account_security_jwt.sys.domain.entity.Account;
 import com.vhbchieu.account_security_jwt.sys.service.AccountService;
+import com.vhbchieu.account_security_jwt.sys.service.AuthenticationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +24,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTTokenProvider jwtTokenProvider;
     private final AccountService accountService;
+    private final AuthenticationService authenticationService;
 
     @Override
     protected void doFilterInternal(
@@ -32,6 +34,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
         final String token;
+        final String jwtId;
         final Long userId;
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);    //next filter
@@ -39,8 +42,15 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
         //jwt
         token = authHeader.substring(7);
-        userId = jwtTokenProvider.getUserId(token);
+        //Chặn các token còn hạn những đã logout
+        jwtId = jwtTokenProvider.getJwtId(token);
+        if (authenticationService.isLogout(jwtId)){
+            filterChain.doFilter(request, response);
+            return;
+        }
 
+        //Phân tích các token hợp lệ
+        userId = jwtTokenProvider.getUserId(token);
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             AccountAuthDto accountAuth = accountService.getAccountAuth(userId);
             //create Auth

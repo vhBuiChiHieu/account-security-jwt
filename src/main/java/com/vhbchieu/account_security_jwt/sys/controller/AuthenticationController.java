@@ -4,6 +4,7 @@ import com.vhbchieu.account_security_jwt.sys.domain.dto.AccountDto;
 import com.vhbchieu.account_security_jwt.sys.domain.dto.LoginDto;
 import com.vhbchieu.account_security_jwt.sys.domain.request.AccountLoginRequest;
 import com.vhbchieu.account_security_jwt.sys.domain.request.AccountRequest;
+import com.vhbchieu.account_security_jwt.sys.domain.request.LogoutRequest;
 import com.vhbchieu.account_security_jwt.sys.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,5 +27,10 @@ public class AuthenticationController {
     @PostMapping("register")
     public AccountDto register(@RequestBody AccountRequest accountRequest) {
         return authenticationService.register(accountRequest);
+    }
+
+    @PostMapping("logout")
+    public void logout(@RequestBody LogoutRequest logoutRequest) {
+        authenticationService.logout(logoutRequest);
     }
 }
