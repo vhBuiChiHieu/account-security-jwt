@@ -24,4 +24,6 @@ public interface AccountService {
     AccountDto update(Long id, AccountRequest accountRequest);
 
     void deleteById(Long id);
+
+    AccountDto getAccountInfo(Long id);
 }

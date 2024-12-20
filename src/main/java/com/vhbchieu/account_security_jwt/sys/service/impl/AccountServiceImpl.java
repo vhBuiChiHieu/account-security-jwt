@@ -75,4 +75,9 @@ public class AccountServiceImpl implements AccountService {
     public void deleteById(Long id) {
         accountRepository.deleteById(id);
     }
+
+    @Override
+    public AccountDto getAccountInfo(Long id) {
+        return accountMapper.getDto(accountRepository.getAccountById(id));
+    }
 }
