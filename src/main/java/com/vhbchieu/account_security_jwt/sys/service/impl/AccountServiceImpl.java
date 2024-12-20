@@ -1,13 +1,16 @@
-package com.vhbchieu.account_security_jwt.sys.service;
+package com.vhbchieu.account_security_jwt.sys.service.impl;
 
 import com.vhbchieu.account_security_jwt.config.constant.AccountError;
 import com.vhbchieu.account_security_jwt.exception.AccountException;
+import com.vhbchieu.account_security_jwt.sys.domain.dto.AccountAuthDto;
 import com.vhbchieu.account_security_jwt.sys.domain.dto.AccountDto;
 import com.vhbchieu.account_security_jwt.sys.domain.entity.Account;
 import com.vhbchieu.account_security_jwt.sys.domain.mapper.AccountMapper;
 import com.vhbchieu.account_security_jwt.sys.domain.request.AccountRequest;
 import com.vhbchieu.account_security_jwt.sys.repos.AccountRepository;
+import com.vhbchieu.account_security_jwt.sys.service.AccountService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,15 +30,16 @@ public class AccountServiceImpl implements AccountService {
     public AccountDto create(AccountRequest request) {
         if (getByUsername(request.getUsername()) != null)
             throw new AccountException(AccountError.USERNAME_ALREADY_EXISTS);
-        Account newAccount = accountMapper.toAccount(request);
+        Account newAccount = accountMapper.getAccount(request);
+        newAccount.setPassword(new BCryptPasswordEncoder().encode(request.getPassword()));
         newAccount.setUpdateTime(new Date());
         accountRepository.save(newAccount);
-        return accountMapper.toDto(newAccount);
+        return accountMapper.getDto(newAccount);
     }
 
     @Override
     public AccountDto getById(Long id) {
-        return accountMapper.toDto(accountRepository.getAccountById(id));
+        return accountMapper.getDto(accountRepository.getAccountById(id));
     }
 
     @Override
@@ -46,20 +50,25 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<AccountDto> getAll() {
         List<Account> accounts = accountRepository.findAll();
-        return accounts.stream().map(accountMapper::toDto).collect(Collectors.toList());
+        return accounts.stream().map(accountMapper::getDto).collect(Collectors.toList());
     }
 
     @Override
     public AccountDto update(Long id, AccountRequest accountRequest) {
         if (!accountRepository.existsById(id))
             throw new AccountException(AccountError.USER_NOT_EXIST);
-        if (getByUsername(accountRequest.getUsername()) != null)
-            throw new AccountException(AccountError.USERNAME_ALREADY_EXISTS);
-        Account existedAcc = accountMapper.toAccount(accountRequest);
-        existedAcc.setId(id);
-        existedAcc.setUpdateTime(new Date());
-        accountRepository.save(existedAcc);
-        return accountMapper.toDto(existedAcc);
+
+        Account existingAccount = accountRepository.findAccountById(id);
+        accountMapper.requestToAccount(accountRequest, existingAccount);
+        existingAccount.setUpdateTime(new Date());
+        //update
+        accountRepository.save(existingAccount);
+        return accountMapper.getDto(existingAccount);
+    }
+
+    @Override
+    public AccountAuthDto getAccountAuth(Long id) {
+        return new AccountAuthDto(accountRepository.getAccountById(id));
     }
 
     @Override
