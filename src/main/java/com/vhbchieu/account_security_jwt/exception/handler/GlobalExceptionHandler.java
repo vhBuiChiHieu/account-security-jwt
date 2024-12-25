@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = NoResourceFoundException.class)
     ResponseEntity<AppErrorResponse> handleException(NoResourceFoundException e) {
-        log.error("RequestId: {}, Exception: {}", request.getRequestId(), e.getMessage(), e);
+        log.error("RequestId: {}, NoResourceFoundException: {}", request.getRequestId(), e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new AppErrorResponse(request.getRequestId(), "Không tìm thấy tài nguyên truy vấn"));
     }
 

@@ -1,14 +1,11 @@
 package com.vhbchieu.account_security_jwt.config.security;
 
-import com.vhbchieu.account_security_jwt.sys.domain.dto.AccountAuthDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,7 +22,7 @@ public class SecurityConfig {
             "/auth/**",
     };
 
-    private final String[] SPRINGDOCS_ENDPOINT = {
+    private final String[] SPRING_DOCS_ENDPOINT = {
             "/v3/api-docs",
             "/v3/api-docs/**",
             "/v2/api-docs",
@@ -47,9 +44,9 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authRequest -> authRequest
                         .requestMatchers(PUBLIC_ENDPOINT).permitAll()
-                        .requestMatchers(SPRINGDOCS_ENDPOINT).permitAll()
-                        .requestMatchers("/user/info").hasRole("USER")
+                        .requestMatchers(SPRING_DOCS_ENDPOINT).permitAll()
                         .requestMatchers("/user/**").hasRole("ADMIN")
+                        .requestMatchers("/user/info").hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)   //add custom filter
                 .exceptionHandling(exHandler -> exHandler

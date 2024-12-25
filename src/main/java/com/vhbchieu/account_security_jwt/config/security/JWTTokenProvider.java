@@ -18,14 +18,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class JWTTokenProvider {
 
-    private final String SECRET_KEY = "AA5099C4BEFE0FDF7009E4F3426F450746204AD27B977E40A057DF9BC522CDCD";
-    //1h
-    private final long expirationTime = 3600000L;
-
 
     //Tao jwt
     public String generateToken(Long accountId, String roles) {
         //
+        //1h
+        long expirationTime = 3600000L;
         return Jwts.builder()
                 .setId(UUID.randomUUID().toString())
                 .setSubject(accountId + "")
@@ -53,6 +51,9 @@ public class JWTTokenProvider {
 
     //get Key
     private Key getSigningKey() {
+
+        final String SECRET_KEY = "AA5099C4BEFE0FDF7009E4F3426F450746204AD27B977E40A057DF9BC522CDCD";
+
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
     }
 
@@ -67,6 +68,7 @@ public class JWTTokenProvider {
         } catch (MalformedJwtException ex) {
             throw new AccountException(AccountError.TOKEN_INVALID);
         } catch (ExpiredJwtException ex) {
+            //
             throw new AccountException(AccountError.TOKEN_EXPIRED);
         } catch (UnsupportedJwtException ex) {
             throw new AccountException(AccountError.TOKEN_UNSUPPORTED);

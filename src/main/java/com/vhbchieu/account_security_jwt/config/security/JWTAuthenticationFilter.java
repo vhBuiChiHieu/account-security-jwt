@@ -1,8 +1,6 @@
 package com.vhbchieu.account_security_jwt.config.security;
 
 import com.vhbchieu.account_security_jwt.sys.domain.dto.AccountAuthDto;
-import com.vhbchieu.account_security_jwt.sys.domain.dto.AccountDto;
-import com.vhbchieu.account_security_jwt.sys.domain.entity.Account;
 import com.vhbchieu.account_security_jwt.sys.service.AccountService;
 import com.vhbchieu.account_security_jwt.sys.service.AuthenticationService;
 import jakarta.servlet.FilterChain;
@@ -42,6 +40,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
         //jwt
         token = authHeader.substring(7);
+
         //Chặn các token còn hạn những đã logout
         jwtId = jwtTokenProvider.getJwtId(token);
         if (authenticationService.isLogout(jwtId)){

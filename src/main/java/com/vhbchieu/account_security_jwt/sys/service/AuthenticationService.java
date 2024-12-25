@@ -13,4 +13,6 @@ public interface AuthenticationService {
     AccountDto register (AccountRequest request);
     void logout(LogoutRequest request);
     boolean isLogout(String jwtId);
+
+    LoginDto refresh(String freshToken);
 }
