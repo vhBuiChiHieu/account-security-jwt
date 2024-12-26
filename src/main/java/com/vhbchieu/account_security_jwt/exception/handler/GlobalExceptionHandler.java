@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -39,6 +40,13 @@ public class GlobalExceptionHandler {
 
         AppErrorResponse response = new AppErrorResponse(request.getRequestId(), AccountErrorDto.of(e.getError()));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    //HttpMessageNotReadableException
+    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    ResponseEntity<AppErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.error("RequestId: {}, HttpMessageNotReadableException: {}", request.getRequestId(), e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new AppErrorResponse(request.getRequestId(), "Không thể đọc dữ liệu từ http."));
     }
 
 }

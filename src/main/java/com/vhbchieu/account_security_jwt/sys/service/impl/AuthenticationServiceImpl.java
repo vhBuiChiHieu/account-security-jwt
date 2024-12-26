@@ -65,4 +65,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return invalidatedTokenRepository.existsById(jwtId);
     }
 
+    @Override
+    public LoginDto refresh(String freshToken) {
+        return null;
+    }
+
 }
